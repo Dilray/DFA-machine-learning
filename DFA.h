@@ -7,15 +7,22 @@
 
 class DFA {
 private:
+
+    // структура данных дл€ состо€ни€
     struct State {
+        // хэш таблица дл€ хранени€ переходов из состо€ни€
         std::unordered_map<char, State*> transitions;
+        // по дефолту состо€ние не допускающее
         bool is_final = false;
     };
 
+    // начальное состо€ние
     State* start_state;
+    // все состо€ни€ (хран€тс€ в сете)
     std::set<State*> all_states;
 
 public:
+
     DFA() {
         start_state = new State();
         all_states.insert(start_state);
@@ -24,16 +31,16 @@ public:
     void add_string(const std::string& str) {
         State* current_state = start_state;
 
-        for (char ch : str) {
+        for (const char& ch : str) {
             if (current_state->transitions.find(ch) == current_state->transitions.end()) {
-                // —оздаем новое состо€ние, если перехода нет
+                // создаем новое состо€ние, если перехода нет
                 State* new_state = new State();
                 current_state->transitions[ch] = new_state;
                 all_states.insert(new_state);
             }
             current_state = current_state->transitions[ch];
         }
-        current_state->is_final = true; // ”станавливаем текущее состо€ние как финальное
+        current_state->is_final = true; // устанавливаем текущее состо€ние как финальное
     }
 
     bool accepts(const std::string& str) const {
@@ -41,13 +48,14 @@ public:
 
         for (char ch : str) {
             if (current_state->transitions.find(ch) == current_state->transitions.end()) {
-                return false; // ѕерехода нет, строка не принимаетс€
+                return false; // перехода нет, строка не принимаетс€
             }
             current_state = current_state->transitions.at(ch);
         }
-        return current_state->is_final; // ѕровер€ем, €вл€етс€ ли текущее состо€ние финальным
+        return current_state->is_final; // провер€ем, €вл€етс€ ли текущее состо€ние финальным
     }
 
+    // функци€ вывода автомата
     void print() const {
         std::cout << "States: " << all_states.size() << std::endl;
         for (const auto& state : all_states) {
@@ -60,7 +68,7 @@ public:
 
     ~DFA() {
         for (auto state : all_states) {
-            delete state; // ќсвобождаем пам€ть
+            delete state; // освобождаем пам€ть
         }
     }
 };
